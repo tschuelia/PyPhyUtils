@@ -10,3 +10,8 @@ Currently implemented functions:
 * Get execution time from RAxML8 log files
 * Get results of the statistical tests for IQ-Tree .iqtree files
 * Get results of the statisical tests for RAxML8 log files
+
+You can install it as pip package:
+```shell
+cd PyPhyUtils && pip install -e .
+```
