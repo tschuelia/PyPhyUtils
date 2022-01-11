@@ -54,3 +54,43 @@ def get_raxmlng_starting_tree_type(log_file: FilePath) -> str:
             continue
         # start tree(s): random (1)
         return line.split()[2].strip()
+
+
+def get_raxmlng_abs_rf_distance(log_file: FilePath) -> float:
+    STR = "Average absolute RF distance in this tree set:"
+    return get_single_value_from_file(log_file, STR)
+
+
+def get_raxmlng_rel_rf_distance(log_file: FilePath) -> float:
+    STR = "Average relative RF distance in this tree set:"
+    return get_single_value_from_file(log_file, STR)
+
+
+def get_raxmlng_num_unique_topos(log_file: FilePath) -> int:
+    STR = "Number of unique topologies in this tree set:"
+    return int(get_single_value_from_file(log_file, STR))
+
+
+def get_cleaned_rf_dist(raw_line: str) -> Tuple[int, int, float, float]:
+    line_regex = regex.compile(r"(\d+)\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s*")
+    tree_idx1, tree_idx2, plain_dist, normalized_dist = regex.search(
+        line_regex, raw_line
+    ).groups()
+    return int(tree_idx1), int(tree_idx2), float(plain_dist), float(normalized_dist)
+
+
+def get_pairwise_rfdistances(
+        rfdistances_file_path: FilePath,
+) -> (TreeTreeIndexed[int], TreeTreeIndexed[float]):
+    with open(rfdistances_file_path) as f:
+        rfdistances = f.readlines()
+
+    abs_res = {}
+    rel_res = {}
+
+    for line in rfdistances:
+        idx1, idx2, plain, norm = get_cleaned_rf_dist(line)
+        abs_res[(idx1, idx2)] = plain
+        rel_res[(idx1, idx2)] = norm
+
+    return abs_res, rel_res
