@@ -1,4 +1,4 @@
-from utils import *
+from .utils import *
 
 
 def get_raxml_execution_time(raxml_file: FilePath) -> float:

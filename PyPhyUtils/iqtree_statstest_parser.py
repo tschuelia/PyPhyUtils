@@ -1,4 +1,4 @@
-from custom_types import *
+from .custom_types import *
 import regex
 import warnings
 
