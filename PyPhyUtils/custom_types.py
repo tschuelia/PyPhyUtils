@@ -1,5 +1,6 @@
 from typing import Dict, List, Tuple
 
+Executable = str
 FilePath = str
 NewickString = str
 IqTreeMetrics = Dict
