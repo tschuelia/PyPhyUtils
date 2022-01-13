@@ -1,4 +1,4 @@
-from custom_types import *
+from .custom_types import *
 
 
 def _get_raxmlng_base_command(
