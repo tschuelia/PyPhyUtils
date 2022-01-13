@@ -15,7 +15,7 @@ def get_raxml_shtest_results(raxml_file: FilePath) -> TreeIndexed[RaxMetrics]:
             if m:
                 llh, delta_llh, sd = (float(el) for el in m.groups()[:3])
                 sign_five, sign_two, sign_one = (
-                    False if el.lower() == "no" else True for el in m.groups()[3:]
+                    True if el.lower() == "no" else False for el in m.groups()[3:]
                 )
 
                 results.append(
