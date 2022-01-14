@@ -1,15 +1,15 @@
 from .utils import *
+from .regex_constants import *
 
 import regex
 
-sh_regex = r"Tree:\s+\d+ Likelihood:\s+([-+]?\d+(?:\.\d+)?(?:[e][-+]?\d+)?)\s+D\(LH\):\s+([-+]?\d+(?:\.\d+)?(?:[e][-+]?\d+)?)\s+SD:\s+([-+]?\d+(?:\.\d+)?(?:[e][-+]?\d+)?)\s+Significantly\s+Worse:\s+([a-zA-Z]+)\s+\(5%\),\s+([a-zA-Z]+)\s+\(2%\),\s+([a-zA-Z]+)\.*"
-sh_regex = regex.compile(sh_regex)
-
 
 def get_raxml_shtest_results(raxml_file: FilePath) -> TreeIndexed[RaxMetrics]:
-    content = read_file_contents(raxml_file)
+    sh_regex = rf"Tree:{blanks}{tree_id_re} Likelihood:{blanks}({llh_re}){blanks}D\(LH\):{blanks}({deltaL_re}){blanks}SD:{blanks}([-+]?{float_re}){blanks}Significantly{blanks}Worse:{blanks}([a-zA-Z]+){blanks}\(5%\),{blanks}([a-zA-Z]+){blanks}\(2%\),{blanks}([a-zA-Z]+)\.*"
+    sh_regex = regex.compile(sh_regex)
+
     results = []
-    for line in content:
+    for line in read_file_contents(raxml_file):
         if line.startswith("Tree"):
             m = regex.match(sh_regex, line)
             if m:
@@ -20,7 +20,7 @@ def get_raxml_shtest_results(raxml_file: FilePath) -> TreeIndexed[RaxMetrics]:
 
                 results.append(
                     {
-                        "llh": llh,
+                        "logL": llh,
                         "deltaL": delta_llh,
                         "sd": sd,
                         "significant": {
@@ -34,9 +34,8 @@ def get_raxml_shtest_results(raxml_file: FilePath) -> TreeIndexed[RaxMetrics]:
 
 
 def get_raxml_elwtest_results(raxml_file: FilePath) -> TreeIndexed[RaxMetrics]:
-    content = read_file_contents(raxml_file)
     likelihoods = []
-    for line in content:
+    for line in read_file_contents(raxml_file):
         if line.startswith("Original"):
             _, llh = line.rsplit(" ", 1)
             llh = float(llh.strip())
@@ -58,9 +57,12 @@ def get_raxml_elwtest_results(raxml_file: FilePath) -> TreeIndexed[RaxMetrics]:
     results = []
     for llh, post_prob, cum_prob in zip(likelihoods, posterior_probs, cumulative_probs):
         results.append({
-            "llh": llh,
+            "logL": llh,
             "c-ELW": post_prob,
             "cumulative_c-elw": cum_prob
         })
     return results
 
+
+raxml_file = "/Users/julia/Desktop/Promotion/StatisticalTests/test_tree_order/result_files/D354/RAxML_info.ordered_SH"
+print(get_raxml_shtest_results(raxml_file)[3])

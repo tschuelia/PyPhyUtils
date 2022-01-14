@@ -1,3 +1,4 @@
+from .regex_constants import *
 from .utils import *
 
 import regex
@@ -5,7 +6,7 @@ import regex
 
 def get_raxmlng_run_param_value(line: str, param_identifier: str) -> float:
     raxmlng_run_param_regex = regex.compile(
-        rf"/*--{param_identifier}\s+(\d+(?:\.\d+)?(?:[e][-+]?\d+)?)/*"
+        rf"/*--{param_identifier}{blanks}({float_re})/*"
     )
     value = regex.search(raxmlng_run_param_regex, line).groups()[0]
     return float(value)
@@ -22,9 +23,7 @@ def get_raxmlng_final_llh(raxmlng_file: FilePath) -> float:
 
 
 def get_raxmlng_elapsed_time(log_file: FilePath) -> float:
-    content = read_file_contents(log_file)
-
-    for line in content:
+    for line in read_file_contents(log_file):
         if not "Elapsed time:" in line:
             continue
         # two cases now:
@@ -47,9 +46,7 @@ def get_raxmlng_elapsed_time(log_file: FilePath) -> float:
 
 
 def get_raxmlng_starting_tree_type(log_file: FilePath) -> str:
-    content = read_file_contents(log_file)
-
-    for line in content:
+    for line in read_file_contents(log_file):
         if not line.startswith("start tree"):
             continue
         # start tree(s): random (1)
@@ -72,7 +69,7 @@ def get_raxmlng_num_unique_topos(log_file: FilePath) -> int:
 
 
 def get_cleaned_rf_dist(raw_line: str) -> Tuple[int, int, float, float]:
-    line_regex = regex.compile(r"(\d+)\s+(\d+)\s+(\d+)\s+(\d+\.\d+)\s*")
+    line_regex = regex.compile(fr"({tree_id_re}){blanks}({tree_id_re}){blanks}(\d+){blanks}({float_re})\s*")
     tree_idx1, tree_idx2, plain_dist, normalized_dist = regex.search(
         line_regex, raw_line
     ).groups()
@@ -81,7 +78,7 @@ def get_cleaned_rf_dist(raw_line: str) -> Tuple[int, int, float, float]:
 
 def get_pairwise_rfdistances(
         rfdistances_file_path: FilePath,
-) -> (TreeTreeIndexed[int], TreeTreeIndexed[float]):
+) -> Tuple[TreeTreeIndexed, TreeTreeIndexed]:
     with open(rfdistances_file_path) as f:
         rfdistances = f.readlines()
 

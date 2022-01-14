@@ -11,7 +11,7 @@ def _get_raxml_base_command(
 ) -> str:
     additional_settings = ""
     for key, value in kwargs.items():
-        additional_settings += f"--{key} {value}"
+        additional_settings += f"--{key} {value} "
 
     return (
         f"{raxml_executable} "

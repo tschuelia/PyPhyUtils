@@ -1,10 +1,11 @@
 from .utils import *
+from .regex_constants import *
 import regex
 
 
 def get_iqtree_run_param_value(line: str, param_identifier: str) -> float:
     iqtree_run_param_regex = regex.compile(
-        rf"/*-{param_identifier}\s+(\d+(?:\.\d+)?(?:[e][-+]?\d+)?)/*"
+        rf"/*-{param_identifier}{blanks}({float_re})/*"
     )
     value = regex.search(iqtree_run_param_regex, line).groups()[0]
     return float(value)
@@ -16,9 +17,7 @@ def get_iqtree_llh(iqtree_file: FilePath) -> float:
 
 
 def get_iqtree_cpu_time(log_file: FilePath) -> float:
-    content = read_file_contents(log_file)
-
-    for line in content:
+    for line in read_file_contents(log_file):
         if not "Total CPU time used:" in line:
             continue
 

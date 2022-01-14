@@ -13,7 +13,7 @@ def _get_raxmlng_base_command(
     rerun_analysis = "--redo" if rerun_analysis else ""
     additional_settings = ""
     for key, value in kwargs.items():
-        additional_settings += f"--{key} {value}"
+        additional_settings += f"--{key} {value} "
 
     return (
         f"{raxmlng_executable} "
@@ -81,7 +81,7 @@ def get_raxmlng_rfdistance_command(
     rerun_analysis = "--redo" if rerun_analysis else ""
     additional_settings = ""
     for key, value in kwargs.items():
-        additional_settings += f"--{key} {value}"
+        additional_settings += f"--{key} {value} "
 
     return (
         f"{raxmlng_executable} "

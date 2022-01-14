@@ -1,50 +1,12 @@
 from .custom_types import *
+from .regex_constants import *
+from .utils import *
 import regex
 import warnings
 
-# define some regex stuff
-blanks = r"\s+"  # matches >=1  subsequent whitespace characters
-sign = r"[-+]?"  # contains either a '-' or a '+' symbol or none of both
-# matches ints or floats of forms '1.105' or '1.105e-5' or '1.105e5' or '1.105e+5'
-float_re = r"\d+(?:\.\d+)?(?:[e][-+]?\d+)?"
-
-tree_id_re = r"\d+"  # tree ID is an int
-llh_re = rf"{sign}{float_re}"  # likelihood is a signed floating point
-deltaL_re = rf"{sign}{float_re}"  # deltaL is a signed floating point
-# test result entry is of form '0.123 +'
-test_result_re = rf"{float_re}{blanks}{sign}"
-
-stat_test_name = r"[a-zA-Z-]+"
-
-# table header is of form:
-# Tree      logL    deltaL  bp-RELL    p-KH     p-SH    p-WKH    p-WSH       c-ELW       p-AU
-table_header = rf"Tree{blanks}logL{blanks}deltaL{blanks}(?:({stat_test_name})\s*)*"
-table_header_re = regex.compile(table_header)
-
-# a table entry in the .iqtree file looks for example like this:
-# 5 -5708.931281 1.7785e-06  0.0051 -  0.498 +  0.987 +  0.498 +  0.987 +      0.05 +    0.453 +
-table_entry = rf"({tree_id_re}){blanks}({llh_re}){blanks}({deltaL_re}){blanks}(?:({test_result_re})\s*)*"
-table_entry_re = regex.compile(table_entry)
-
-START_STRING = "USER TREES"
-END_STRING = "TIME STAMP"
-
 
 def _get_relevant_section(input_file: FilePath) -> str:
-    """
-    Returns the content of input_file between START_STRING and END_STRING.
-
-    Args:
-        input_file: Path to the iqtree test summary file.
-
-    Returns:
-        String containing the content between START_STRING and END_STRING.
-
-    Raises:
-        ValueError if the section between START_STRING and END_STRING is empty.
-    """
-    with open(input_file) as f:
-        content = f.readlines()
+    content = read_file_contents(input_file)
 
     # now let's find the relevant lines
     # the relevant lines are only between the start and end string
@@ -52,9 +14,9 @@ def _get_relevant_section(input_file: FilePath) -> str:
     end = 0
 
     for i, line in enumerate(content):
-        if START_STRING in line:
+        if "USER TREES" in line:
             start = i
-        if END_STRING in line:
+        if "TIME STAMP" in line:
             end = i
 
     if start == end:
@@ -78,6 +40,11 @@ def _get_names_of_performed_tests(table_section: str) -> List[str]:
     Raises:
         ValueError if the section does not contain a table header matching the defined regex.
     """
+    # table header is of form:
+    # Tree      logL    deltaL  bp-RELL    p-KH     p-SH    p-WKH    p-WSH       c-ELW       p-AU
+    table_header = rf"Tree{blanks}logL{blanks}deltaL{blanks}(?:({stat_test_name})\s*)*"
+    table_header_re = regex.compile(table_header)
+
     test_names = []
 
     for line in table_section:
@@ -109,6 +76,11 @@ def _get_cleaned_table_entries(
     Raises:
         ValueError if the section does not contain table entries matching the defined regex.
     """
+    # a table entry in the .iqtree file looks for example like this:
+    # 5 -5708.931281 1.7785e-06  0.0051 -  0.498 +  0.987 +  0.498 +  0.987 +      0.05 +    0.453 +
+    table_entry = rf"({tree_id_re}){blanks}({llh_re}){blanks}({deltaL_re}){blanks}(?:({test_result_re})\s*)*"
+    table_entry_re = regex.compile(table_entry)
+
     entries = []
     for line in table_section:
         line = line.strip()
@@ -132,38 +104,17 @@ def _get_cleaned_table_entries(
 
 def _get_default_entry() -> IqTreeMetrics:
     return {
-                "deltaL": 0,
-                "tests": {
-                    'bp-RELL': {
-                        'score': 1,
-                        'significant': True
-                    },
-                    'p-KH': {
-                        'score': 1,
-                        'significant': True
-                    },
-                    'p-SH': {
-                        'score': 1,
-                        'significant': True
-                    },
-                    'p-WKH': {
-                        'score': 1,
-                        'significant': True
-                    },
-                    'p-WSH': {
-                        'score': 1,
-                        'significant': True
-                    },
-                    'c-ELW': {
-                        'score': 1,
-                        'significant': True
-                    },
-                    'p-AU': {
-                        'score': 1,
-                        'significant': True
-                    }
-                }
-            }
+        "deltaL": 0,
+        "tests": {
+            "bp-RELL": {"score": 1, "significant": True},
+            "p-KH": {"score": 1, "significant": True},
+            "p-SH": {"score": 1, "significant": True},
+            "p-WKH": {"score": 1, "significant": True},
+            "p-WSH": {"score": 1, "significant": True},
+            "c-ELW": {"score": 1, "significant": True},
+            "p-AU": {"score": 1, "significant": True},
+        },
+    }
 
 
 def get_iqtree_results(iqtree_file: FilePath) -> TreeIndexed[IqTreeMetrics]:

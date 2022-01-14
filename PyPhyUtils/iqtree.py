@@ -13,7 +13,7 @@ def _get_iqtree_base_command(
     rerun_analysis = "-redo" if rerun_analysis else ""
     additional_settings = ""
     for key, value in kwargs.items():
-        additional_settings += f"-{key} {value}"
+        additional_settings += f"-{key} {value} "
 
     return (
         f"{iqtree_executable} "
@@ -87,17 +87,3 @@ def get_iqtree_tree_topology_test_command(
 
     return f"{base_command} -z {treesfile} {best_tree} -n 0 -zb {n_bootstrap_replicates} -zw -au"
 
-
-print(
-    get_iqtree_tree_topology_test_command(
-        "iqtree",
-        msa="/Users/julia/Desktop/Promotion/StatisticalTests/input_files/D354/D354.phy",
-        model="GTR+G",
-        prefix="/tmp/prefix",
-        threads=2,
-        treesfile="/Users/julia/Desktop/Promotion/StatisticalTests/input_files/D354/un_trees.ordered",
-        best_tree_file="/Users/julia/Desktop/Promotion/StatisticalTests/input_files/D354/best.tree",
-        rerun_analysis=True,
-        seed=42
-    )
-)

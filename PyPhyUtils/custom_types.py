@@ -5,7 +5,8 @@ FilePath = str
 NewickString = str
 IqTreeMetrics = Dict
 RaxMetrics = Dict
+ConselMetrics = Dict
 
 TreeIndex = int
 TreeIndexed = List
-TreeTreeIndexed = Dict
+TreeTreeIndexed = Dict[Tuple[int, int], float]
