@@ -10,20 +10,28 @@ def _get_raxmlng_base_command(
     rerun_analysis=False,
     **kwargs,
 ) -> str:
-    rerun_analysis = "--redo" if rerun_analysis else ""
-    additional_settings = ""
-    for key, value in kwargs.items():
-        additional_settings += f"--{key} {value} "
+    rerun_analysis = ["--redo"] if rerun_analysis else []
 
-    return (
-        f"{raxmlng_executable} "
-        f"--msa {msa} "
-        f"--model {model} "
-        f"--prefix {prefix} "
-        f"--threads {threads} "
-        f"{rerun_analysis} "
-        f"{additional_settings}"
-    )
+    additional_settings = []
+    for key, value in kwargs.items():
+        if value is None:
+            additional_settings += [f"--{key}"]
+        else:
+            additional_settings += [f"--{key}", str(value)]
+
+    return [
+        raxmlng_executable,
+        "--msa",
+        msa,
+        "--model",
+        model,
+        "--prefix",
+        prefix,
+        "--threads",
+        str(threads),
+        *rerun_analysis,
+        *additional_settings,
+    ]
 
 
 def get_raxmlng_treesearch_command(
@@ -50,7 +58,7 @@ def get_raxmlng_treesearch_command(
         raxmlng_executable, msa, model, prefix, threads, rerun_analysis, **kwargs
     )
 
-    return f"{base_command} " f"--tree {trees} "
+    return base_command + ["--tree", trees]
 
 
 def get_raxmlng_eval_command(
@@ -67,7 +75,7 @@ def get_raxmlng_eval_command(
         raxmlng_executable, msa, model, prefix, threads, rerun_analysis, **kwargs
     )
 
-    return f"{base_command} --eval --tree {treefile}"
+    return base_command + ["--eval", "--tree", treefile]
 
 
 def get_raxmlng_rfdistance_command(
@@ -78,16 +86,23 @@ def get_raxmlng_rfdistance_command(
     rerun_analysis=False,
     **kwargs,
 ) -> str:
-    rerun_analysis = "--redo" if rerun_analysis else ""
-    additional_settings = ""
-    for key, value in kwargs.items():
-        additional_settings += f"--{key} {value} "
+    rerun_analysis = ["--redo"] if rerun_analysis else []
 
-    return (
-        f"{raxmlng_executable} "
-        f"--rfdist {treesfile} "
-        f"--threads {threads} "
-        f"--prefix {prefix} "
-        f"{rerun_analysis} "
-        f"{additional_settings}"
-    )
+    additional_settings = []
+    for key, value in kwargs.items():
+        if value is None:
+            additional_settings += [f"--{key}"]
+        else:
+            additional_settings += [f"--{key}", str(value)]
+
+    return [
+        raxmlng_executable,
+        "--rfdist",
+        treesfile,
+        "--prefix",
+        prefix,
+        "--threads",
+        str(threads),
+        *rerun_analysis,
+        *additional_settings,
+    ]

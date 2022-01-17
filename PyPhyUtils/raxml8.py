@@ -9,18 +9,25 @@ def _get_raxml_base_command(
     threads: int = 2,
     **kwargs,
 ) -> str:
-    additional_settings = ""
+    additional_settings = []
     for key, value in kwargs.items():
-        additional_settings += f"--{key} {value} "
+        if value is None:
+            additional_settings += [f"-{key}"]
+        else:
+            additional_settings += [f"-{key}", str(value)]
 
-    return (
-        f"{raxml_executable} "
-        f"-s {msa} "
-        f"-m {model} "
-        f"-n {suffix} "
-        f"-T {threads} "
-        f"{additional_settings}"
-    )
+    return [
+        raxml_executable,
+        "-s",
+        msa,
+        "-m",
+        model,
+        "-n",
+        suffix,
+        "-T",
+        str(threads),
+        *additional_settings,
+    ]
 
 
 def get_raxml_tree_topology_test_command(
@@ -32,22 +39,31 @@ def get_raxml_tree_topology_test_command(
     test_algorithm: str,
     best_tree_file: FilePath = None,
     threads: int = 2,
-    n_bootstrap_replicates=10_000,
+    n_bootstrap_replicates: int = 10_000,
     **kwargs,
 ) -> str:
 
-    algo = "-f "
+    algo = ["-f"]
     if test_algorithm == "ELW":
-        algo += "W"
+        algo += ["W"]
     elif test_algorithm == "SH":
-        algo += "H"
+        algo += ["H"]
     else:
-        raise ValueError(f"Error: unrecognized topology test algorithm {test_algorithm}. Available options are `ELW` and `SH`.")
+        raise ValueError(
+            f"Error: unrecognized topology test algorithm {test_algorithm}. Available options are `ELW` and `SH`."
+        )
 
-    best_tree = f"-t {best_tree_file}" if best_tree_file else ""
+    best_tree = ["-t", best_tree_file] if best_tree_file else []
 
     base_command = _get_raxml_base_command(
         raxml_executable, msa, model, suffix, threads, **kwargs
     )
 
-    return f"{base_command} {algo} -z {treesfile} {best_tree} -N {n_bootstrap_replicates}"
+    return base_command + [
+        *algo,
+        "-z",
+        treesfile,
+        *best_tree,
+        "-N",
+        str(n_bootstrap_replicates),
+    ]

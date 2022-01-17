@@ -11,4 +11,22 @@ def get_consel_tree_topology_test_command(
     if not os.path.exists(prefix + ".sitelh"):
         raise ValueError(f"Error: Consel requires the site loglikelihood as file with name {prefix}.sitelh")
 
-    return f"{makermt_executable} --puzzle {prefix} && {consel_executable} {prefix} && {catpv_executable} {prefix} > {prefix}.consel"
+    _makermt = [
+        makermt_executable,
+        "--puzzle",
+        prefix
+    ]
+
+    _consel = [
+        consel_executable,
+        prefix
+    ]
+
+    _catpv = [
+        catpv_executable,
+        prefix,
+        ">",
+        prefix + ".consel"
+    ]
+
+    return _makermt, _consel, _catpv

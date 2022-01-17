@@ -35,7 +35,8 @@ def get_raxml_shtest_results(raxml_file: FilePath) -> TreeIndexed[RaxMetrics]:
 
 def get_raxml_elwtest_results(raxml_file: FilePath) -> TreeIndexed[RaxMetrics]:
     likelihoods = []
-    for line in read_file_contents(raxml_file):
+    content = read_file_contents(raxml_file)
+    for line in content:
         if line.startswith("Original"):
             _, llh = line.rsplit(" ", 1)
             llh = float(llh.strip())
@@ -62,7 +63,3 @@ def get_raxml_elwtest_results(raxml_file: FilePath) -> TreeIndexed[RaxMetrics]:
             "cumulative_c-elw": cum_prob
         })
     return results
-
-
-raxml_file = "/Users/julia/Desktop/Promotion/StatisticalTests/test_tree_order/result_files/D354/RAxML_info.ordered_SH"
-print(get_raxml_shtest_results(raxml_file)[3])
