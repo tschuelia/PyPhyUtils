@@ -10,18 +10,20 @@ def _get_relevant_section(input_file: FilePath) -> str:
 
     # now let's find the relevant lines
     # the relevant lines are only between the start and end string
+    start_str = "USER TREES"
+    end_str = "TIME STAMP"
     start = 0
     end = 0
 
     for i, line in enumerate(content):
-        if "USER TREES" in line:
+        if start_str in line:
             start = i
-        if "TIME STAMP" in line:
+        if end_str in line:
             end = i
 
     if start == end:
         raise ValueError(
-            f"The section between START_STRING {START_STRING} and END_STRING {END_STRING} is empty. Please check the input file {input_file}."
+            f"The section between START_STRING {start_str} and END_STRING {end_str} is empty. Please check the input file {input_file}."
         )
 
     return content[start:end]

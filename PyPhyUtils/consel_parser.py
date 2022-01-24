@@ -56,14 +56,14 @@ def get_consel_results(consel_file: FilePath) -> TreeIndexed[ConselMetrics]:
             "deltaL": float(deltaL),
             "rank": int(rank),
             "tests": {
-                "bp-RELL": bpRELL,
-                "p-KH": pKH,
-                "p-SH": pSH,
-                "p-WKH": pWKH,
-                "p-WSH": pWSH,
-                "p-AU": pAU,
-                "bp-Mult": bpMult,
-                "bayesPosteriorProb": bayesPP,
+                "bp-RELL": float(bpRELL),
+                "p-KH": float(pKH),
+                "p-SH": float(pSH),
+                "p-WKH": float(pWKH),
+                "p-WSH": float(pWSH),
+                "p-AU": float(pAU),
+                "bp-Mult": float(bpMult),
+                "bayesPosteriorProb": float(bayesPP),
             },
         }
         results.append(data)

@@ -1,5 +1,4 @@
 from .custom_types import *
-import os
 
 
 def get_consel_tree_topology_test_command(
@@ -7,9 +6,15 @@ def get_consel_tree_topology_test_command(
     consel_executable: Executable,
     catpv_executable: Executable,
     prefix: str,
+    **kwargs
 ) -> str:
-    if not os.path.exists(prefix + ".sitelh"):
-        raise ValueError(f"Error: Consel requires the site loglikelihood as file with name {prefix}.sitelh")
+
+    additional_settings = []
+    for key, value in kwargs.items():
+        if value is None:
+            additional_settings += [f"-{key}"]
+        else:
+            additional_settings += [f"-{key}", str(value)]
 
     _makermt = [
         makermt_executable,
