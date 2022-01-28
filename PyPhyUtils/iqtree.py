@@ -9,7 +9,7 @@ def _get_iqtree_base_command(
     threads: int = 2,
     rerun_analysis=False,
     **kwargs,
-) -> str:
+) -> List:
     rerun_analysis = ["-redo"] if rerun_analysis else []
 
     additional_settings = []
@@ -43,7 +43,7 @@ def get_iqtree_treesearch_command(
     num_pars_trees: int = 10,
     rerun_analysis=False,
     **kwargs,
-) -> str:
+) -> List:
     if num_pars_trees > 0:
         trees = ["-ninit", num_pars_trees]
     else:
@@ -65,7 +65,7 @@ def get_iqtree_eval_command(
     threads: int = 2,
     rerun_analysis=False,
     **kwargs,
-) -> str:
+) -> List:
 
     base_command = _get_iqtree_base_command(
         iqtree_executable, msa, model, prefix, threads, rerun_analysis, **kwargs
@@ -84,7 +84,7 @@ def get_iqtree_tree_topology_test_command(
     best_tree_file: FilePath = None,
     n_bootstrap_replicates: int = 10_000,
     **kwargs,
-) -> str:
+) -> List:
 
     best_tree = ["-te", best_tree_file] if best_tree_file else []
 

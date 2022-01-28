@@ -6,9 +6,8 @@ import regex
 
 def get_consel_results(consel_file: FilePath) -> TreeIndexed[ConselMetrics]:
     id_regex = rf"{blanks}({tree_id_re})"
-    res_regex = rf"{blanks}({float_re})"
+    res_regex = rf"{blanks}({sign}{float_re})"
     consel_regex = rf"#{id_regex}{id_regex}{res_regex}{res_regex}{res_regex}\s*\|\s*{res_regex}{res_regex}{res_regex}{res_regex}{res_regex}{res_regex}"
-    test_names = [""]
 
     unorderd_results = []
 
