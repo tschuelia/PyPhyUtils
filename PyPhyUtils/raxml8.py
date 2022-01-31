@@ -48,6 +48,8 @@ def get_raxml_tree_topology_test_command(
         algo += ["W"]
     elif test_algorithm == "SH":
         algo += ["H"]
+    elif test_algorithm == "sitelh":
+        algo += ["G"]
     else:
         raise ValueError(
             f"Error: unrecognized topology test algorithm {test_algorithm}. Available options are `ELW` and `SH`."
