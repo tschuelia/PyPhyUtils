@@ -1,4 +1,13 @@
 from .custom_types import *
+import subprocess
+
+
+def run_cmd(cmd: Command) -> None:
+    try:
+        subprocess.check_output(cmd)
+    except Exception as e:
+        print(f"Error running command \"{' '.join(cmd)}\"")
+        raise e
 
 
 def read_file_contents(file_path: FilePath) -> List[str]:
@@ -6,6 +15,11 @@ def read_file_contents(file_path: FilePath) -> List[str]:
         content = f.readlines()
 
     return [l.strip() for l in content]
+
+
+def write_trees_to_file(file_path: FilePath, trees: List[NewickString]) -> None:
+    with open(file_path, "w") as f:
+        f.write("\n".join([t.strip() for t in trees]))
 
 
 def get_value_from_line(line: str, search_string: str) -> float:
