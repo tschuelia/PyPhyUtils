@@ -1,4 +1,4 @@
-from .raxmlng import _get_raxmlng_base_command
+from .raxmlng import RAxMLNG
 
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
@@ -210,9 +210,9 @@ def treelikeness_score(msa, data_type):
 
 
 def _run_raxmlng_alignment_parse(msa_file, raxmlng_executable, model, tmpdir):
-    cmd = _get_raxmlng_base_command(
-        raxmlng_executable=raxmlng_executable,
-        msa=msa_file,
+    raxmlng = RAxMLNG(raxmlng_executable)
+    cmd = raxmlng._base_cmd(
+        msa_file=msa_file,
         model=model,
         prefix=tmpdir,
         threads=1
