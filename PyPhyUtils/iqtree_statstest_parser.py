@@ -107,6 +107,7 @@ def _get_cleaned_table_entries(
 def _get_default_entry() -> IqTreeMetrics:
     return {
         "deltaL": 0,
+        "plausible": True,
         "tests": {
             "bp-RELL": {"score": 1, "significant": True},
             "p-KH": {"score": 1, "significant": True},
@@ -149,6 +150,8 @@ def get_iqtree_results(iqtree_file: FilePath) -> TreeIndexed[IqTreeMetrics]:
         data["deltaL"] = float(deltaL)
         data["tests"] = {}
 
+        num_passed = 0
+
         for i, test in enumerate(test_names):
             test_result = test_results[i]
             score, significant = test_result.split(" ")
@@ -157,6 +160,11 @@ def get_iqtree_results(iqtree_file: FilePath) -> TreeIndexed[IqTreeMetrics]:
             data["tests"][test] = {}
             data["tests"][test]["score"] = float(score)
             data["tests"][test]["significant"] = True if significant == "+" else False
+
+            if data["tests"][test]["significant"]:
+                num_passed += 1
+
+        data["plausible"] = num_passed == len(data["tests"].keys())
 
         results.append(data)
     return results
