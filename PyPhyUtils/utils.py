@@ -1,5 +1,24 @@
 from .custom_types import *
 import subprocess
+from statistics import median
+
+
+def tukeys_fence(values, k=3):
+    values = sorted(values)
+
+    if len(values) >= 2:
+        midpoint = int(round(len(values) / 2.0))
+        q1 = median(values[:midpoint])
+        q3 = median(values[midpoint:])
+        iqr = q3 - q1
+        lower = q1 - (iqr * k)
+        upper = q3 + (iqr * k)
+    elif values:
+        lower = upper = values[0]
+    else:
+        lower = upper = 0
+
+    return lower, upper
 
 
 def run_cmd(cmd: Command) -> None:
